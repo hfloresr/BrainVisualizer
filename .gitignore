@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.swp
+
+# C extensions
+*.so
+
+# data
+*.mat
+*.csv
+*.Rdmpd
+
+# Distribution / packaging
+.Python
+env/
+build/
+downloads/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# dotenv
+.env
+
+# virtualenv
+.venv
+venv/
+ENV/
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
