@@ -6,14 +6,14 @@ import vtk
 
 # Helper functions
 def vtk_show(renderer, width=400, height=300):
-    renderer_window = vtk.vtkRenderWindow()
+    renderWindow = vtk.vtkRenderWindow()
     renderWindow.SetOffScreenRendering(1)
-    renderer_window.AddRenderer(renderer)
-    renderer_window.SetSize(width, height)
-    renderer_window.Render()
+    renderWindow.AddRenderer(renderer)
+    renderWindow.SetSize(width, height)
+    renderWindow.Render()
 
     win2imgfilter = vtk.vtkWindowToImageFilter()
-    win2imgfilter.SetInput(renderer_window)
+    win2imgfilter.SetInput(renderWindow)
     win2imgfilter.Update()
 
     writer = vtk.vtkPNGWriter()
@@ -22,6 +22,20 @@ def vtk_show(renderer, width=400, height=300):
     writer.Write()
 
     return writer.GetResult()
+
+def createDummyRenderer():
+    renderer = vtk.vtkRenderer()
+    renderer.SetBackground(1.0, 1.0, 1.0)
+
+    camera = renderer.MakeCamera()
+    camera.SetPosition(-256, -256, 512)
+    camera.SetFocalPoint(0.0, 0.0, 255.0)
+    camera.SetViewAngle(30.0)
+    camera.SetViewUp(0.46, -0.80, -0.38)
+    renderer.SetActiveCamera(camera)
+
+    return renderer
+
 
 # path to the .mha file
 fname_seg = '../nac_brain_atlas/brain_segmentation.mha'
