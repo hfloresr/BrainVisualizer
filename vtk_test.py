@@ -4,23 +4,23 @@ from vtk.numpy_interface import dataset_adapter as dsa
 
 
 lh_fname = 'all_ply/pial_Full/lh.pial.ply'
-rh_fname = 'all_ply/pial_Full/rh.pial.ply'
+#rh_fname = 'all_ply/pial_Full/rh.pial.ply'
 
 lhreader = vtk.vtkPLYReader()
 lhreader.SetFileName(lh_fname)
 
-rhreader = vtk.vtkPLYReader()
-rhreader.SetFileName(rh_fname)
+#rhreader = vtk.vtkPLYReader()
+#rhreader.SetFileName(rh_fname)
 
 lhreader.Update()
-rhreader.Update()
+#rhreader.Update()
 
 lh_data = lhreader.GetOutput()
-rh_data = rhreader.GetOutput()
+#rh_data = rhreader.GetOutput()
 
 # points are (x, y, z)
 lh_points = [lh_data.GetPoint(i) for i in range(lh_data.GetNumberOfPoints())]
-rh_points = [rh_data.GetPoint(i) for i in range(rh_data.GetNumberOfPoints())]
+#rh_points = [rh_data.GetPoint(i) for i in range(rh_data.GetNumberOfPoints())]
 
 import pdb; pdb.set_trace()
 
@@ -39,8 +39,8 @@ ch1.SetDirection(0., 0., -1.)
 mlh = vtk.vtkPolyDataMapper()
 mlh.SetInputConnection(lhreader.GetOutputPort())
 
-mrh = vtk.vtkPolyDataMapper()
-mrh.SetInputConnection(rhreader.GetOutputPort())
+#mrh = vtk.vtkPolyDataMapper()
+#mrh.SetInputConnection(rhreader.GetOutputPort())
 
 mch1 = vtk.vtkPolyDataMapper()
 mch1.SetInputConnection(ch1.GetOutputPort())
@@ -49,8 +49,8 @@ alh = vtk.vtkActor()
 alh.SetMapper(mlh)
 #alh.GetProperty().SetOpacity(0.6)
 
-arh = vtk.vtkActor()
-arh.SetMapper(mrh)
+#arh = vtk.vtkActor()
+#arh.SetMapper(mrh)
 #arh.GetProperty().SetOpacity(0.65)
 
 ach1 = vtk.vtkActor()
@@ -64,7 +64,7 @@ a.SetOrientationMarker(axes)
 ren = vtk.vtkRenderer()
 ren.SetGradientBackground(True)
 ren.AddActor(alh)
-ren.AddActor(arh)
+#ren.AddActor(arh)
 ren.AddActor(ach1)
 
 renWin = vtk.vtkRenderWindow()

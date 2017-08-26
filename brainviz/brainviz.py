@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow, QGridLayout,
                              QSlider, QHBoxLayout, QVBoxLayout)
 from PyQt5.QtCore import QObject, Qt, pyqtSignal
 
+
 class UI(object):
     def setup_ui(self, main_window):
         main_window.setObjectName("MainWindow")
@@ -25,7 +26,6 @@ class UI(object):
         sld.setRange(1, 300)
         sld.setValue(1)
         sld.setGeometry(30, 40, 150, 30)
-
 
 
 class SimpleView(QMainWindow):
@@ -47,6 +47,13 @@ class SimpleView(QMainWindow):
         rhreader = vtk.vtkPLYReader()
         rhreader.SetFileName(rh_fname)
 
+        ch1 = vtk.vtkConeSource()
+        ch1.SetResolution(60)
+        ch1.SetRadius(2.0)
+        ch1.SetHeight(12.0)
+        ch1.SetCenter(30.0, 20.0, 40.0)
+        ch1.SetDirection(0., 0., -1.)
+
         #lhreader.Update()
         #rhreader.Update()
 
@@ -55,16 +62,22 @@ class SimpleView(QMainWindow):
         lhmapper.SetInputConnection(lhreader.GetOutputPort())
         rhmapper = vtk.vtkPolyDataMapper()
         rhmapper.SetInputConnection(rhreader.GetOutputPort())
+        ch1m = vtk.vtkPolyDataMapper()
+        ch1m.SetInputConnection(ch1.GetOutputPort())
 
         # Actor
         lhactor = vtk.vtkActor()
         lhactor.SetMapper(lhmapper)
         rhactor = vtk.vtkActor()
         rhactor.SetMapper(rhmapper)
+        ch1actor = vtk.vtkActor()
+        ch1actor.SetMapper(ch1m)
+        ch1actor.GetProperty().SetDiffuseColor(0.33, 0., 0.)
 
         self.ren.SetGradientBackground(True)
         self.ren.AddActor(lhactor)
         self.ren.AddActor(rhactor)
+        self.ren.AddActor(ch1actor)
 
         # TODO: Fix Axes
         #axes = vtk.vtkAxesActor()
