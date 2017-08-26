@@ -3,49 +3,41 @@
 
 import os
 import sys
+import time
 import numpy as np
 import vtk
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow, QGridLayout,
-                             QSlider, QHBoxLayout, QVBoxLayout)
+                             QSlider, QHBoxLayout, QVBoxLayout, QFrame)
 from PyQt5.QtCore import QObject, Qt, pyqtSignal
 
 
-class UI(object):
-    def setup_ui(self, main_window):
-        main_window.setObjectName("MainWindow")
-        main_window.resize(600, 600)
-        self.centralWidget = QWidget(main_window)
-        self.gridlayout = QGridLayout(self.centralWidget)
-        self.vtkWidget = QVTKRenderWindowInteractor(self.centralWidget)
-        self.gridlayout.addWidget(self.vtkWidget, 0, 0, 1, 1)
-        main_window.setCentralWidget(self.centralWidget)
+class QBrainViewer(QFrame):
+    def __init__(self, parent, data_dir):
+        super(QBrainViewer, self).__init__(parent)
 
-        sld = QSlider(Qt.Horizontal, main_window)
-        sld.setFocusPolicy(Qt.NoFocus)
-        sld.setRange(1, 300)
-        sld.setValue(1)
-        sld.setGeometry(30, 40, 150, 30)
+        # Create QtWidget a child
+        interactor = QVTKRenderWindowInteractor(self)
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(interactor)
+        self.layout.setContentsMargins(0,0,0,0)
+        self.setLayout(self.layout)
 
+        # Read data source
+        lh_file = os.path.join(data_dir, 'lh.pial.ply')
+        rh_file = os.path.join(data_dir, 'rh.pial.ply')
+        lh_reader = vtk.vtkPLYReader()
+        lh_reader.SetFileName(lh_file)
+        rh_reader = vtk.vtkPLYReader()
+        rh_reader.SetFileName(rh_file)
 
-class SimpleView(QMainWindow):
-    def __init__(self, parent=None):
-        QMainWindow.__init__(self, parent)
-        self.ui = UI()
-        self.ui.setup_ui(self)
-        self.ren = vtk.vtkRenderer()
-        self.ui.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
-        self.iren = self.ui.vtkWidget.GetRenderWindow().GetInteractor()
+        # Setup VTK environment
+        ren = vtk.vtkRenderer()
+        ren_window = interactor.GetRenderWindow()
+        ren_window.AddRenderer(ren)
 
-        # Get source
-        lh_fname = '../all_ply/pial_Full/lh.pial.ply'
-        rh_fname = '../all_ply/pial_Full/rh.pial.ply'
-
-        lhreader = vtk.vtkPLYReader()
-        lhreader.SetFileName(lh_fname)
-
-        rhreader = vtk.vtkPLYReader()
-        rhreader.SetFileName(rh_fname)
+        ren_window.SetInteractor(interactor)
+        ren.SetGradientBackground(True)
 
         ch1 = vtk.vtkConeSource()
         ch1.SetResolution(60)
@@ -59,9 +51,9 @@ class SimpleView(QMainWindow):
 
         # Mapper
         lhmapper = vtk.vtkPolyDataMapper()
-        lhmapper.SetInputConnection(lhreader.GetOutputPort())
+        lhmapper.SetInputConnection(lh_reader.GetOutputPort())
         rhmapper = vtk.vtkPolyDataMapper()
-        rhmapper.SetInputConnection(rhreader.GetOutputPort())
+        rhmapper.SetInputConnection(rh_reader.GetOutputPort())
         ch1m = vtk.vtkPolyDataMapper()
         ch1m.SetInputConnection(ch1.GetOutputPort())
 
@@ -72,26 +64,50 @@ class SimpleView(QMainWindow):
         rhactor.SetMapper(rhmapper)
         ch1actor = vtk.vtkActor()
         ch1actor.SetMapper(ch1m)
-        ch1actor.GetProperty().SetDiffuseColor(0.33, 0., 0.)
+        ch1actor.GetProperty().SetDiffuseColor(0.333, 0., 0.)
 
-        self.ren.SetGradientBackground(True)
-        self.ren.AddActor(lhactor)
-        self.ren.AddActor(rhactor)
-        self.ren.AddActor(ch1actor)
+        ren.AddActor(lhactor)
+        ren.AddActor(rhactor)
+        ren.AddActor(ch1actor)
 
-        # TODO: Fix Axes
-        #axes = vtk.vtkAxesActor()
-        #a = vtk.vtkOrientationMarkerWidget()
-        #a.SetOrientationMarker(axes)
-        #a.SetInteractor(self.iren)
-        #a.EnabledOn()
-        #a.InteractiveOn()
-        #self.ren.ResetCamera()
+        self.ren = ren
+        self.interactor = interactor
+
+    def start(self):
+        self.interactor.Initialize()
+        self.interactor.Start()
+
+    #def set_epoch(self, new_value):
+    #    print(new_value)
+    #    self.epoch.
+
+class BrainViewerApp(QMainWindow):
+    def __init__(self, data_dir):
+        super(BrainViewerApp, self).__init__()
+        self.vtk_widget = None
+        self.ui = None
+        self.setup(data_dir)
+
+    def setup(self, data_dir):
+        import brain_ui
+        self.ui = brain_ui.Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.vtk_widget = QBrainViewer(self.ui.vtk_panel, data_dir)
+        self.ui.vtk_layout = QHBoxLayout()
+        self.ui.vtk_layout.addWidget(self.vtk_widget)
+        self.ui.vtk_layout.setContentsMargins(0,0,0,0)
+        self.ui.vtk_panel.setLayout(self.ui.vtk_layout)
+
+        #self.ui.epoch_slider.setValue(1)
+        #self.ui.epoch_slider.valueChanged.connect(self.vtk_widget.set_epoch)
+
+    def initialize(self):
+        self.vtk_widget.start()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = SimpleView()
+    window = BrainViewerApp('../all_ply/pial_Full')
     window.show()
-    window.iren.Initialize()  # Need this line to show the render insie Qt
+    window.initialize()
     sys.exit(app.exec_())
