@@ -4,15 +4,24 @@
 import os
 import sys
 import numpy as np
+
+import matplotlib as mpl
+mpl.use('Qt5Agg')
+import matplotlib.cm as cm
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+
 import vtk
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+
 from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow, QGridLayout,
-                             QSlider, QHBoxLayout, QVBoxLayout, QFrame)
+                             QSlider, QHBoxLayout, QVBoxLayout, QFrame,
+                             QMessageBox, QSizePolicy)
 from PyQt5.QtCore import QObject, Qt, pyqtSignal
+from PyQt5 import QtCore
+
 from lfpcluster import lfpcluster as lc
 from scipy.io import loadmat
-import matplotlib as mpl
-import matplotlib.cm as cm
 
 
 data = loadmat('../data/F141020-lfp-5min-1kHz.mat')
