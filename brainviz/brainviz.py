@@ -146,7 +146,6 @@ class QBrainViewer(QFrame):
         for actor in self.chns_actors:
             ren.AddActor(actor)
         
-
         self.ren = ren
         self.interactor = interactor
         self.ren_window = ren_window
