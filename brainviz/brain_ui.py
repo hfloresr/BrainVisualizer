@@ -32,6 +32,8 @@ class Ui_MainWindow(object):
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
         self.epoch_slider= QSlider(self.frame)
+        self.epoch_slider.setMinimum(1)
+        self.epoch_slider.setMaximum(300)
         self.epoch_slider.setOrientation(Qt.Horizontal)
         self.epoch_slider.setObjectName("epoch_slider")
         self.verticalLayout.addWidget(self.epoch_slider)
