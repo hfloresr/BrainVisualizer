@@ -136,13 +136,10 @@ class QBrainViewer(QFrame):
         rhactor = vtk.vtkActor()
         rhactor.SetMapper(rhmapper)
 
-        r, g, b = 0, 0, 0
         self.chns_actors = [vtk.vtkActor() for i in range(len(chns_mapper))]
         for mapper, actor in enumerate(self.chns_actors):
             actor.SetMapper(chns_mapper[mapper])
-            actor.GetProperty().SetDiffuseColor(r, g, b)
-
-        self.init_cluster()
+        self.init_clusters()
 
         ren.AddActor(lhactor)
         ren.AddActor(rhactor)
@@ -152,38 +149,23 @@ class QBrainViewer(QFrame):
 
         self.ren = ren
         self.interactor = interactor
-
-        self.r, self.g, self.b = r, g, b
-        #self.ch1actor = ch1actor
-        #self.chns_actors = chns_actors
         self.ren_window = ren_window
 
     def start(self):
         self.interactor.Initialize()
         self.interactor.Start()
 
-    def init_cluster(self, epoch=1):
+    def init_clusters(self, epoch=1):
         Z_pre_clust, my_clusters = pre_cluster.get_clusters(k=4, epoch=epoch)
         my_colors = [(0,0,0,0) if c == 0 else mapper.to_rgba(c) for c in my_clusters]  
         for col, actor in enumerate(self.chns_actors):
             r, g, b, a = my_colors[col]
-            print(r, g, b)
             actor.GetProperty().SetDiffuseColor(r, g, b)
 
     def set_color(self, epoch):
-        Z_pre_clust, my_clusters = pre_cluster.get_clusters(k=4, epoch=epoch)
-        my_colors = [(0,0,0,0) if c == 0 else mapper.to_rgba(c) for c in my_clusters]  
-
-        for col, actor in enumerate(self.chns_actors):
-            r, g, b, a = my_colors[col]
-            print(r, g, b)
-            actor.GetProperty().SetDiffuseColor(r, g, b)
-
-        print('MY CLUSTERS: {}'.format(my_clusters))
-        print('CURRENT EPOCH: {}'.format(epoch))
+        self.init_clusters(epoch=epoch)
         self.ren_window.Render()
         
-
 
 class BrainViewerApp(QMainWindow):
     def __init__(self, data_dir):
