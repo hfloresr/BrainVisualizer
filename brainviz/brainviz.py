@@ -74,6 +74,7 @@ class QBrainViewer(QFrame):
         radius = 2.0
         height = 12.0
 
+        # Electrode placements
         channel_locs = [(-30, -80, 22),
                         (-10, -80, 25),
                         (10, -80, 25),
@@ -115,7 +116,6 @@ class QBrainViewer(QFrame):
             x, y, z = channel_locs[i]
             ch.SetCenter(x, y, z)
             ch.SetDirection(0., 0., -1.)
-
 
         lh_reader.Update()
         rh_reader.Update()
