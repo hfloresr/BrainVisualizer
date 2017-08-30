@@ -3,6 +3,7 @@
 
 import os
 import sys
+import argparse
 import numpy as np
 
 import matplotlib as mpl
@@ -191,8 +192,16 @@ class BrainViewerApp(QMainWindow):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--dir', type=str, help='visualization data directory')
+    args = parser.parse_args()
+
+    default_dir = '../all_ply/pial_Full'
+    brain_dir = args.dir if args.dir else default_dir
+
+
     app = QApplication(sys.argv)
-    window = BrainViewerApp('../all_ply/pial_Full')
+    window = BrainViewerApp(brain_dir)
     window.show()
     window.initialize()
     sys.exit(app.exec_())
