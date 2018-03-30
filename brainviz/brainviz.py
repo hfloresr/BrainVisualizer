@@ -157,7 +157,7 @@ class QBrainViewer(QFrame):
 
     def init_clusters(self, epoch=1):
         Z_pre_clust, my_clusters = pre_cluster.get_clusters(k=4, epoch=epoch)
-        my_colors = [(0,0,0,0) if c == 0 else mapper.to_rgba(c) for c in my_clusters]  
+        my_colors = [(0,0,0,0) if c == 0 else mapper.to_rgba(c) for c in my_clusters]
         for col, actor in enumerate(self.chns_actors):
             r, g, b, a = my_colors[col]
             actor.GetProperty().SetDiffuseColor(r, g, b)
@@ -193,7 +193,7 @@ class BrainViewerApp(QMainWindow):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--dir', type=str, help='visualization data directory')
+    parser.add_argument('-d', '--dir', type=str, help='visual data directory')
     args = parser.parse_args()
 
     default_dir = '../all_ply/pial_Full'
